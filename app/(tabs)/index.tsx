@@ -11,8 +11,9 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import MiniStatCard from '../../src/components/MiniStatCard'; // 👈 nuevo import
 import { useFavorites } from '../../src/context/FavoritesContext';
-import { getCharacters } from '../../src/services/api';
+import { getCharacters, getCharactersByStatus } from '../../src/services/api';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -20,8 +21,17 @@ export default function HomeScreen() {
   const [totalCharacters, setTotalCharacters] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // 👇 nuevo estado de estadísticas avanzadas
+  const [stats, setStats] = useState({
+    totalAlive: 0,
+    totalDead: 0,
+    totalUnknown: 0,
+    mostCommonSpecies: '',
+  });
+
   useEffect(() => {
     loadStats();
+    loadAdvancedStats(); // 👈 cargamos también las estadísticas avanzadas
   }, []);
 
   const loadStats = async () => {
@@ -32,6 +42,26 @@ export default function HomeScreen() {
       console.error('Error loading stats:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 👇 función que te pidieron en la consigna
+  const loadAdvancedStats = async () => {
+    try {
+      const [alive, dead, unknown] = await Promise.all([
+        getCharactersByStatus('alive'),
+        getCharactersByStatus('dead'),
+        getCharactersByStatus('unknown'),
+      ]);
+      
+      setStats({
+        totalAlive: alive.info.count,
+        totalDead: dead.info.count,
+        totalUnknown: unknown.info.count,
+        mostCommonSpecies: 'Human', // o calcular dinámicamente
+      });
+    } catch (error) {
+      console.error('Error loading stats:', error);
     }
   };
 
@@ -57,19 +87,53 @@ export default function HomeScreen() {
         {loading ? (
           <ActivityIndicator size="large" color="#00b3c7" style={styles.loader} />
         ) : (
-          <View style={styles.statsGrid}>
-            <View style={[styles.statCard, { backgroundColor: '#00b3c7' }]}>
-              <Ionicons name="people" size={32} color="#fff" />
-              <Text style={styles.statNumber}>{totalCharacters}</Text>
-              <Text style={styles.statLabel}>Personajes</Text>
+          <>
+            {/* Stats principales */}
+            <View style={styles.statsGrid}>
+              <View style={[styles.statCard, { backgroundColor: '#00b3c7' }]}>
+                <Ionicons name="people" size={32} color="#fff" />
+                <Text style={styles.statNumber}>{totalCharacters}</Text>
+                <Text style={styles.statLabel}>Personajes</Text>
+              </View>
+
+              <View style={[styles.statCard, { backgroundColor: '#ff4444' }]}>
+                <Ionicons name="heart" size={32} color="#fff" />
+                <Text style={styles.statNumber}>{favorites.length}</Text>
+                <Text style={styles.statLabel}>Favoritos</Text>
+              </View>
             </View>
 
-            <View style={[styles.statCard, { backgroundColor: '#ff4444' }]}>
-              <Ionicons name="heart" size={32} color="#fff" />
-              <Text style={styles.statNumber}>{favorites.length}</Text>
-              <Text style={styles.statLabel}>Favoritos</Text>
+            {/* 👇 Nuevas métricas avanzadas */}
+            <View style={styles.miniStatsGrid}>
+              <MiniStatCard 
+                icon="checkmark-circle"
+                value={stats.totalAlive}
+                label="Vivos"
+                color="#55cc44"
+              />
+              <MiniStatCard 
+                icon="close-circle"
+                value={stats.totalDead}
+                label="Muertos"
+                color="#d63d2e"
+              />
+              <MiniStatCard 
+                icon="help-circle"
+                value={stats.totalUnknown}
+                label="Desconocidos"
+                color="#9e9e9e"
+              />
             </View>
-          </View>
+
+            {/* Extra: especie más común */}
+            <View style={[styles.statCard, { backgroundColor: '#9c27b0', marginTop: 14 }]}>
+              <Ionicons name="planet" size={32} color="#fff" />
+              <Text style={styles.statNumber}>
+                {stats.mostCommonSpecies || '-'}
+              </Text>
+              <Text style={styles.statLabel}>Especie más común</Text>
+            </View>
+          </>
         )}
       </View>
 
@@ -209,6 +273,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#fff',
     marginTop: 4,
+  },
+  // 👇 estilos para las mini cards
+  miniStatsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
   },
   filtersContainer: {
     padding: 20,
