@@ -1,16 +1,17 @@
 // app/(tabs)/characters.tsx
 
+import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    FlatList,
-    RefreshControl,
-    StyleSheet,
-    Text,
-    View
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import CharacterCard from '../../src/components/CharacterCard';
-import { getCharacters } from '../../src/services/api';
+import { getCharacters, getCharactersByStatus } from '../../src/services/api';
 import { Character } from '../../src/types/character';
 
 export default function CharactersScreen() {
@@ -19,16 +20,34 @@ export default function CharactersScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  
+  const params = useLocalSearchParams();
+  const statusFilter = params.status as string | undefined;
 
   // Cargar personajes inicial
   useEffect(() => {
-    loadCharacters();
+    loadCharacters(1);
   }, []);
+
+  // Recargar cuando cambie el filtro
+  useEffect(() => {
+    if (statusFilter) {
+      loadCharacters(1);
+    }
+  }, [statusFilter]);
 
   const loadCharacters = async (pageNum: number = 1) => {
     try {
       setLoading(true);
-      const data = await getCharacters(pageNum);
+      
+      let data;
+      if (statusFilter && pageNum === 1) {
+        // Si hay filtro y es la primera página, usar el filtro
+        data = await getCharactersByStatus(statusFilter);
+      } else {
+        // Cargar normal
+        data = await getCharacters(pageNum);
+      }
       
       if (pageNum === 1) {
         setCharacters(data.results);
@@ -52,7 +71,8 @@ export default function CharactersScreen() {
   };
 
   const handleLoadMore = () => {
-    if (!loading && hasMore) {
+    if (!loading && hasMore && !statusFilter) {
+      // Solo cargar más si no hay filtro activo
       loadCharacters(page + 1);
     }
   };
@@ -78,6 +98,14 @@ export default function CharactersScreen() {
 
   return (
     <View style={styles.container}>
+      {statusFilter && (
+        <View style={styles.filterBadge}>
+          <Text style={styles.filterText}>
+            📌 Filtro: {statusFilter === 'alive' ? 'Vivos' : statusFilter === 'dead' ? 'Muertos' : 'Desconocidos'}
+          </Text>
+        </View>
+      )}
+      
       <FlatList
         data={characters}
         keyExtractor={(item) => item.id.toString()}
@@ -113,6 +141,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: '#666',
+  },
+  filterBadge: {
+    backgroundColor: '#00b3c7',
+    padding: 12,
+    alignItems: 'center',
+  },
+  filterText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   list: {
     paddingVertical: 8,

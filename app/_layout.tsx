@@ -1,10 +1,11 @@
 // app/_layout.tsx
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { FavoritesProvider } from '../src/context/FavoritesContext';
 
 export default function RootLayout() {
   return (
-    <>
+    <FavoritesProvider>
       <StatusBar style="auto" />
       <Stack
         screenOptions={{
@@ -26,6 +27,6 @@ export default function RootLayout() {
           options={{ title: 'Detalle del Personaje' }} 
         />
       </Stack>
-    </>
+    </FavoritesProvider>
   );
 }
