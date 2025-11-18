@@ -5,33 +5,36 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
-import MiniStatCard from '../../src/components/MiniStatCard'; // 👈 nuevo import
+import { PieChart } from 'react-native-chart-kit'; // 👈 IMPORT NUEVO
 import { useFavorites } from '../../src/context/FavoritesContext';
 import { getCharacters, getCharactersByStatus } from '../../src/services/api';
+
+const screenWidth = Dimensions.get('window').width;
 
 export default function HomeScreen() {
   const router = useRouter();
   const { favorites } = useFavorites();
+  
   const [totalCharacters, setTotalCharacters] = useState(0);
   const [loading, setLoading] = useState(true);
-
-  // 👇 nuevo estado de estadísticas avanzadas
+  
+  // 📊 ESTADO PARA ESTADÍSTICAS AVANZADAS (NUEVO)
   const [stats, setStats] = useState({
     totalAlive: 0,
     totalDead: 0,
     totalUnknown: 0,
-    mostCommonSpecies: '',
   });
 
   useEffect(() => {
     loadStats();
-    loadAdvancedStats(); // 👈 cargamos también las estadísticas avanzadas
+    loadAdvancedStats(); // 👈 LLAMAR FUNCIÓN NUEVA
   }, []);
 
   const loadStats = async () => {
@@ -45,7 +48,7 @@ export default function HomeScreen() {
     }
   };
 
-  // 👇 función que te pidieron en la consigna
+  // 📊 FUNCIÓN PARA CARGAR ESTADÍSTICAS AVANZADAS (NUEVA)
   const loadAdvancedStats = async () => {
     try {
       const [alive, dead, unknown] = await Promise.all([
@@ -58,108 +61,152 @@ export default function HomeScreen() {
         totalAlive: alive.info.count,
         totalDead: dead.info.count,
         totalUnknown: unknown.info.count,
-        mostCommonSpecies: 'Human', // o calcular dinámicamente
       });
     } catch (error) {
-      console.error('Error loading stats:', error);
+      console.error('Error loading advanced stats:', error);
     }
   };
 
-  const handleFilterByStatus = (status: string) => {
-    // Navegar a la pantalla de personajes con filtro
-    router.push(`/characters?status=${status}`);
+  const navigateToCharacters = (status?: string) => {
+    if (status) {
+      router.push(`/characters?status=${status}`);
+    } else {
+      router.push('/characters');
+    }
   };
+
+  // 📊 DATOS DEL GRÁFICO (NUEVO)
+  const chartData = [
+    {
+      name: 'Vivos',
+      population: stats.totalAlive,
+      color: '#55cc44',
+      legendFontColor: '#333',
+      legendFontSize: 12,
+    },
+    {
+      name: 'Muertos',
+      population: stats.totalDead,
+      color: '#d63d2e',
+      legendFontColor: '#333',
+      legendFontSize: 12,
+    },
+    {
+      name: 'Desconocidos',
+      population: stats.totalUnknown,
+      color: '#9e9e9e',
+      legendFontColor: '#333',
+      legendFontSize: 12,
+    },
+  ];
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#00b3c7" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>🏠 MultiversoHub</Text>
-        <Text style={styles.subtitle}>
-          Explora el universo de Rick & Morty
-        </Text>
+        <Text style={styles.logo}>🏠</Text>
+        <Text style={styles.title}>MultiversoHub</Text>
+        <Text style={styles.subtitle}>Explora el universo de Rick & Morty</Text>
       </View>
 
-      {/* Estadísticas */}
-      <View style={styles.statsContainer}>
-        <Text style={styles.statsTitle}>📊 Estadísticas</Text>
+      {/* Estadísticas Principales */}
+      <View style={styles.statsSection}>
+        <Text style={styles.sectionTitle}>📊 Estadísticas</Text>
         
-        {loading ? (
-          <ActivityIndicator size="large" color="#00b3c7" style={styles.loader} />
+        <View style={styles.statsRow}>
+          <View style={[styles.statCard, { backgroundColor: '#00b3c7' }]}>
+            <Ionicons name="people" size={40} color="#fff" />
+            <Text style={styles.statNumber}>{totalCharacters}</Text>
+            <Text style={styles.statLabel}>Personajes</Text>
+          </View>
+
+          <View style={[styles.statCard, { backgroundColor: '#ff6b6b' }]}>
+            <Ionicons name="heart" size={40} color="#fff" />
+            <Text style={styles.statNumber}>{favorites.length}</Text>
+            <Text style={styles.statLabel}>Favoritos</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* 📊 GRÁFICO DE DISTRIBUCIÓN (NUEVO) */}
+      <View style={styles.chartSection}>
+        <Text style={styles.sectionTitle}>📈 Distribución por Estado</Text>
+        
+        {stats.totalAlive > 0 ? (
+          <View style={styles.chartContainer}>
+            <PieChart
+              data={chartData}
+              width={screenWidth - 40}
+              height={220}
+              chartConfig={{
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              }}
+              accessor="population"
+              backgroundColor="transparent"
+              paddingLeft="15"
+              absolute // 👈 Muestra números en lugar de porcentajes
+            />
+          </View>
         ) : (
-          <>
-            {/* Stats principales */}
-            <View style={styles.statsGrid}>
-              <View style={[styles.statCard, { backgroundColor: '#00b3c7' }]}>
-                <Ionicons name="people" size={32} color="#fff" />
-                <Text style={styles.statNumber}>{totalCharacters}</Text>
-                <Text style={styles.statLabel}>Personajes</Text>
-              </View>
-
-              <View style={[styles.statCard, { backgroundColor: '#ff4444' }]}>
-                <Ionicons name="heart" size={32} color="#fff" />
-                <Text style={styles.statNumber}>{favorites.length}</Text>
-                <Text style={styles.statLabel}>Favoritos</Text>
-              </View>
-            </View>
-
-            {/* 👇 Nuevas métricas avanzadas */}
-            <View style={styles.miniStatsGrid}>
-              <MiniStatCard 
-                icon="checkmark-circle"
-                value={stats.totalAlive}
-                label="Vivos"
-                color="#55cc44"
-              />
-              <MiniStatCard 
-                icon="close-circle"
-                value={stats.totalDead}
-                label="Muertos"
-                color="#d63d2e"
-              />
-              <MiniStatCard 
-                icon="help-circle"
-                value={stats.totalUnknown}
-                label="Desconocidos"
-                color="#9e9e9e"
-              />
-            </View>
-
-            {/* Extra: especie más común */}
-            <View style={[styles.statCard, { backgroundColor: '#9c27b0', marginTop: 14 }]}>
-              <Ionicons name="planet" size={32} color="#fff" />
-              <Text style={styles.statNumber}>
-                {stats.mostCommonSpecies || '-'}
-              </Text>
-              <Text style={styles.statLabel}>Especie más común</Text>
-            </View>
-          </>
+          <View style={styles.chartLoading}>
+            <ActivityIndicator size="small" color="#00b3c7" />
+            <Text style={styles.chartLoadingText}>Cargando estadísticas...</Text>
+          </View>
         )}
+
+        {/* Mini cards con estadísticas */}
+        <View style={styles.miniStatsRow}>
+          <View style={styles.miniStatCard}>
+            <View style={[styles.miniStatDot, { backgroundColor: '#55cc44' }]} />
+            <Text style={styles.miniStatLabel}>Vivos</Text>
+            <Text style={styles.miniStatNumber}>{stats.totalAlive}</Text>
+          </View>
+
+          <View style={styles.miniStatCard}>
+            <View style={[styles.miniStatDot, { backgroundColor: '#d63d2e' }]} />
+            <Text style={styles.miniStatLabel}>Muertos</Text>
+            <Text style={styles.miniStatNumber}>{stats.totalDead}</Text>
+          </View>
+
+          <View style={styles.miniStatCard}>
+            <View style={[styles.miniStatDot, { backgroundColor: '#9e9e9e' }]} />
+            <Text style={styles.miniStatLabel}>Desconocidos</Text>
+            <Text style={styles.miniStatNumber}>{stats.totalUnknown}</Text>
+          </View>
+        </View>
       </View>
 
       {/* Filtros Rápidos */}
-      <View style={styles.filtersContainer}>
-        <Text style={styles.filtersTitle}>🔍 Filtros Rápidos</Text>
-        
-        <TouchableOpacity 
+      <View style={styles.filtersSection}>
+        <Text style={styles.sectionTitle}>🔍 Filtros Rápidos</Text>
+
+        <TouchableOpacity
           style={[styles.filterButton, { backgroundColor: '#55cc44' }]}
-          onPress={() => handleFilterByStatus('alive')}
+          onPress={() => navigateToCharacters('alive')}
         >
           <Ionicons name="checkmark-circle" size={24} color="#fff" />
           <Text style={styles.filterButtonText}>Personajes Vivos</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.filterButton, { backgroundColor: '#d63d2e' }]}
-          onPress={() => handleFilterByStatus('dead')}
+          onPress={() => navigateToCharacters('dead')}
         >
           <Ionicons name="close-circle" size={24} color="#fff" />
           <Text style={styles.filterButtonText}>Personajes Muertos</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.filterButton, { backgroundColor: '#9e9e9e' }]}
-          onPress={() => handleFilterByStatus('unknown')}
+          onPress={() => navigateToCharacters('unknown')}
         >
           <Ionicons name="help-circle" size={24} color="#fff" />
           <Text style={styles.filterButtonText}>Estado Desconocido</Text>
@@ -167,17 +214,17 @@ export default function HomeScreen() {
       </View>
 
       {/* Accesos Rápidos */}
-      <View style={styles.quickAccessContainer}>
-        <Text style={styles.quickAccessTitle}>⚡ Accesos Rápidos</Text>
-        
+      <View style={styles.quickAccessSection}>
+        <Text style={styles.sectionTitle}>⚡ Accesos Rápidos</Text>
+
         <TouchableOpacity 
           style={styles.quickAccessButton}
-          onPress={() => router.push('/characters')}
+          onPress={() => navigateToCharacters()}
         >
           <Ionicons name="list" size={24} color="#00b3c7" />
-          <View style={styles.quickAccessTextContainer}>
-            <Text style={styles.quickAccessText}>Ver Todos los Personajes</Text>
-            <Text style={styles.quickAccessSubtext}>
+          <View style={styles.quickAccessText}>
+            <Text style={styles.quickAccessTitle}>Ver Todos los Personajes</Text>
+            <Text style={styles.quickAccessSubtitle}>
               Explorar la lista completa
             </Text>
           </View>
@@ -188,18 +235,18 @@ export default function HomeScreen() {
           style={styles.quickAccessButton}
           onPress={() => router.push('/favorites')}
         >
-          <Ionicons name="heart" size={24} color="#ff4444" />
-          <View style={styles.quickAccessTextContainer}>
-            <Text style={styles.quickAccessText}>Mis Favoritos</Text>
-            <Text style={styles.quickAccessSubtext}>
-              {favorites.length} personajes guardados
+          <Ionicons name="heart" size={24} color="#ff6b6b" />
+          <View style={styles.quickAccessText}>
+            <Text style={styles.quickAccessTitle}>Mis Favoritos</Text>
+            <Text style={styles.quickAccessSubtitle}>
+              {favorites.length} personaje{favorites.length !== 1 ? 's' : ''} guardado{favorites.length !== 1 ? 's' : ''}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={24} color="#ccc" />
         </TouchableOpacity>
       </View>
 
-      {/* Footer Info */}
+      {/* Footer */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>
           Datos proporcionados por Rick and Morty API
@@ -214,54 +261,54 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  header: {
-    backgroundColor: '#00b3c7',
-    padding: 24,
-    paddingTop: 32,
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#fff',
+  header: {
+    backgroundColor: '#00b3c7',
+    padding: 30,
+    alignItems: 'center',
+  },
+  logo: {
+    fontSize: 48,
     marginBottom: 8,
   },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
+  },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#fff',
     opacity: 0.9,
   },
-  statsContainer: {
+  statsSection: {
     padding: 20,
-    backgroundColor: '#fff',
-    marginTop: -20,
-    marginHorizontal: 16,
-    borderRadius: 12,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
   },
-  statsTitle: {
-    fontSize: 20,
+  sectionTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 16,
+    marginBottom: 15,
   },
-  loader: {
-    marginVertical: 20,
-  },
-  statsGrid: {
+  statsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: 12,
   },
   statCard: {
     flex: 1,
     padding: 20,
     borderRadius: 12,
     alignItems: 'center',
-    marginHorizontal: 6,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   statNumber: {
     fontSize: 32,
@@ -274,33 +321,74 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginTop: 4,
   },
-  // 👇 estilos para las mini cards
-  miniStatsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-  },
-  filtersContainer: {
+  // 📊 ESTILOS DEL GRÁFICO (NUEVOS)
+  chartSection: {
+    backgroundColor: '#fff',
+    marginHorizontal: 20,
+    marginBottom: 20,
     padding: 20,
-    marginTop: 16,
+    borderRadius: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  filtersTitle: {
-    fontSize: 20,
+  chartContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  chartLoading: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  chartLoadingText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#999',
+  },
+  miniStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 15,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  miniStatCard: {
+    alignItems: 'center',
+  },
+  miniStatDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginBottom: 4,
+  },
+  miniStatLabel: {
+    fontSize: 12,
+    color: '#999',
+    marginBottom: 2,
+  },
+  miniStatNumber: {
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 12,
+  },
+  filtersSection: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   filterButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
     borderRadius: 12,
-    marginBottom: 12,
+    marginBottom: 10,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 4,
   },
   filterButtonText: {
     fontSize: 16,
@@ -309,42 +397,38 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     flex: 1,
   },
-  quickAccessContainer: {
+  quickAccessSection: {
+    backgroundColor: '#fff',
+    marginHorizontal: 20,
+    marginBottom: 20,
     padding: 20,
-    paddingTop: 0,
-  },
-  quickAccessTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 12,
+    borderRadius: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   quickAccessButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
   },
-  quickAccessTextContainer: {
+  quickAccessText: {
     flex: 1,
     marginLeft: 12,
   },
-  quickAccessText: {
+  quickAccessTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 2,
   },
-  quickAccessSubtext: {
-    fontSize: 12,
+  quickAccessSubtitle: {
+    fontSize: 13,
     color: '#999',
+    marginTop: 2,
   },
   footer: {
     padding: 20,
@@ -353,6 +437,5 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 12,
     color: '#999',
-    textAlign: 'center',
   },
 });
