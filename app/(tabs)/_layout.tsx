@@ -1,8 +1,10 @@
-// app/(tabs)/_layout.tsx
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { useFavorites } from '../../src/context/FavoritesContext'; // 👈 AGREGAR
 
 export default function TabsLayout() {
+  const { favorites } = useFavorites(); // 👈 AGREGAR
+
   return (
     <Tabs
       screenOptions={{
@@ -39,6 +41,7 @@ export default function TabsLayout() {
         name="favorites"
         options={{
           title: 'Favoritos',
+          tabBarBadge: favorites.length > 0 ? favorites.length : undefined, // 👈 AGREGAR
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="heart" size={size} color={color} />
           ),

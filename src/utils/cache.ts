@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { Character } from '../types/character';
 const CACHE_KEY = '@multiversohub:cache';
 const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 horas
 

@@ -216,5 +216,5 @@ Instituto de Educación Superior Cipolletti
 
 **Instituto de Educación Superior Cipolletti**  
 Desarrollo Full Stack | Desarrollo Móvil | 2024
-
+Además de cumplir con todos los requisitos del trabajo práctico, implementé 10 features avanzadas adicionales: búsqueda en tiempo real, filtros combinables, gráficos interactivos, sistema de compartir, animaciones suaves con React Native Reanimated, loading skeletons animados, caché offline inteligente, tests unitarios, y un sistema completo de telemetría.
 </div>
