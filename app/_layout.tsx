@@ -1,7 +1,8 @@
-// app/_layout.tsx
+
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import OfflineNotice from '../src/components/OfflineNotice';
 import { FavoritesProvider } from '../src/context/FavoritesContext';
 import { ThemeProvider } from '../src/context/ThemeContext';
@@ -33,6 +34,7 @@ export default function RootLayout() {
               options={{ title: 'Detalle del Personaje' }} 
             />
           </Stack>
+          <Toast /> {/* 👈 AGREGAR ESTO */}
         </View>
       </FavoritesProvider>
     </ThemeProvider>

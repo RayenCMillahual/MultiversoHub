@@ -1,5 +1,3 @@
-// app/(tabs)/profile.tsx
-
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useState } from 'react';
@@ -15,6 +13,7 @@ import {
 import { useFavorites } from '../../src/context/FavoritesContext';
 import { useTheme } from '../../src/context/ThemeContext';
 import { logUserAction, telemetry } from '../../src/utils/telemetry';
+import { showToast } from '../../src/utils/toast';
 
 export default function ProfileScreen() {
   const { favorites, clearFavorites } = useFavorites();
@@ -22,28 +21,28 @@ export default function ProfileScreen() {
   const [showTelemetry, setShowTelemetry] = useState(false);
 
   const appVersion = Constants.expoConfig?.version || '1.0.0';
-
-  const handleClearData = () => {
-    Alert.alert(
-      'Borrar Datos',
-      '¿Estás seguro de que quieres borrar todos tus favoritos?',
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
+const handleClearData = () => {
+  Alert.alert(
+    'Borrar Datos',
+    '¿Estás seguro de que quieres borrar todos tus favoritos?',
+    [
+      {
+        text: 'Cancelar',
+        style: 'cancel',
+      },
+      {
+        text: 'Borrar',
+        style: 'destructive',
+        onPress: async () => {
+          await clearFavorites();
+          logUserAction('clear_favorites', { count: favorites.length });
+          showToast.success('✅ Datos borrados correctamente'); // 👈 CAMBIAR
         },
-        {
-          text: 'Borrar',
-          style: 'destructive',
-          onPress: async () => {
-            await clearFavorites();
-            logUserAction('clear_favorites', { count: favorites.length });
-            Alert.alert('Éxito', 'Datos borrados correctamente');
-          },
-        },
-      ]
-    );
-  };
+      },
+    ]
+  );
+};
+  
 
   const handleViewTelemetry = () => {
     setShowTelemetry(!showTelemetry);
@@ -51,26 +50,25 @@ export default function ProfileScreen() {
   };
 
   const handleClearTelemetry = () => {
-    Alert.alert(
-      'Borrar Telemetría',
-      '¿Quieres borrar todos los eventos registrados?',
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
+  Alert.alert(
+    'Borrar Telemetría',
+    '¿Quieres borrar todos los eventos registrados?',
+    [
+      {
+        text: 'Cancelar',
+        style: 'cancel',
+      },
+      {
+        text: 'Borrar',
+        style: 'destructive',
+        onPress: () => {
+          telemetry.clearEvents();
+          showToast.success('✅ Telemetría borrada');
         },
-        {
-          text: 'Borrar',
-          style: 'destructive',
-          onPress: () => {
-            telemetry.clearEvents();
-            Alert.alert('Éxito', 'Telemetría borrada');
-          },
-        },
-      ]
-    );
-  };
-
+      },
+    ]
+  );
+};
   const telemetryEvents = telemetry.getEvents();
 
   return (

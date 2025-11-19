@@ -1,8 +1,7 @@
-// app/character/[id].tsx
-
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import * as Sharing from 'expo-sharing'; // 👈 IMPORT NUEVO
+import * as Sharing from 'expo-sharing';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -17,6 +16,7 @@ import {
 import { useFavorites } from '../../src/context/FavoritesContext';
 import { getCharacterById, getEpisodes } from '../../src/services/api';
 import { Character, Episode } from '../../src/types/character';
+import { showToast } from '../../src/utils/toast';
 
 export default function CharacterDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -95,14 +95,20 @@ Aparece en ${episodes.length} episodio${episodes.length !== 1 ? 's' : ''}.
   };
 
   const toggleFavorite = () => {
-    if (!character) return;
-    
-    if (isFavorite) {
-      removeFavorite(character.id);
-    } else {
-      addFavorite(character);
-    }
-  };
+  Haptics.notificationAsync(
+    isFavorite 
+      ? Haptics.NotificationFeedbackType.Warning 
+      : Haptics.NotificationFeedbackType.Success
+  );
+  
+  if (isFavorite) {
+    removeFavorite(character.id);
+    showToast.error('💔 Eliminado de favoritos'); // 👈 CAMBIAR
+  } else {
+    addFavorite(character);
+    showToast.success('❤️ Agregado a favoritos'); // 👈 CAMBIAR
+  }
+};
 
   if (loading) {
     return (
