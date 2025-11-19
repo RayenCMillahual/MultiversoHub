@@ -1,6 +1,6 @@
-# 🌌 MultiversoHub
+# MultiversoHub
 
-### Explora el multiverso de Rick & Morty en tu móvil
+### Una app de Rick & Morty que hice para la facu (y quedó re piola)
 
 <div align="center">
 
@@ -8,213 +8,247 @@
 ![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 
-**Versión 1.0.0** | Proyecto Final - Desarrollo Móvil
+**v1.0.0** | Hecho con amor (y mucho café)
 
 </div>
 
 ---
 
-## 📖 Sobre el Proyecto
+## ¿Qué es esto?
 
-Aplicación móvil educativa desarrollada como trabajo práctico para la materia **Desarrollo Móvil** del IES Cipolletti. Permite explorar personajes de Rick & Morty, marcar favoritos y funciona incluso sin conexión a internet.
+Básicamente, es una app móvil donde podés explorar todos los personajes de Rick & Morty. 
 
-**Empresa Ficticia**: MultiversoHub  
-**Institución**: Instituto de Educación Superior Cipolletti  
-**Carrera**: Desarrollo Full Stack  
-**Año**: 2024
+La hice como trabajo final para la materia de Desarrollo Móvil en el IES Cipolletti. Lo que empezó como un TP simple terminó siendo una app bastante completa (creo que me zarpe un poco).
 
----
-
-## ✨ Características Principales
-
-### 🎯 Funcionalidades Clave
-
-- **📋 Listado Completo**: 826 personajes con scroll infinito
-- **🔍 Filtros Inteligentes**: Por estado (Vivos/Muertos/Desconocidos)
-- **❤️ Sistema de Favoritos**: Guarda tus personajes preferidos
-- **📄 Detalles Completos**: Info + episodios de cada personaje
-- **📡 Modo Offline**: Funciona sin internet
-- **🌓 Tema Oscuro/Claro**: Cambia el tema a tu gusto
-- **📊 Telemetría Local**: Registro de eventos para análisis
-
-### 📱 Pantallas
-
-1. **Home**: Dashboard con estadísticas y accesos rápidos
-2. **Personajes**: Lista completa con filtros y paginación
-3. **Favoritos**: Tu colección personal
-4. **Detalle**: Información completa + episodios
-5. **Perfil**: Configuración y preferencias
+**Fun fact**: Funciona incluso sin internet. Sí, como en los viejos tiempos.
 
 ---
 
-## 🚀 Instalación
+## ¿Qué hace?
 
-### Requisitos Previos
+### Las cosas básicas (que pedía el TP):
+- **Ver personajes**: Los 826 que existen, con scroll infinito
+- **Buscar**: Escribís "Rick" y boom, todos los Ricks
+- **Favoritos**: Guardás tus personajes preferidos 
+- **Detalles**: Info completa + en qué episodios aparece
+- **Modo offline**: Sin wifi? No hay drama, igual funciona
+- **Tema oscuro**: Porque a veces la luz lastima
 
-- Node.js 18+
-- Expo Go (en tu celular)
-- Git
+### Las cosas extras (porque me copé):
+- **Dashboard con gráficos**: Estadísticas re lindas con torta y todo
+- **Filtros combinados**: Por estado, especie, género... lo que quieras
+- **Compartir**: "Mirá este personaje" → WhatsApp, Instagram, donde sea
+- **Animaciones**: Todo con movimiento suave, nada de saltos
+- **Skeletons**: Mientras carga muestra placeholders animados (re pro)
+- **Telemetría**: Registra qué hacés en la app (tranqui, es local)
+- **Haptic feedback**: Vibra cuando tocás cosas importantes
+- **Notificaciones toast**: Mensajitos lindos que aparecen abajo
 
-### Pasos
+---
+
+## Capturas de Pantalla
+
+<div align="center">
+  
+### Inicio
+<img src="./screenshots/1-home.png" width="250" alt="Home" />
+
+*Dashboard con estadísticas en tiempo real*
+
+### Personajes
+<img src="./screenshots/2-characters.png" width="250" alt="Lista" />
+
+*Búsqueda + filtros que funcionan en serio*
+
+### Detalle
+<img src="./screenshots/3-detail.png" width="250" alt="Detalle" />
+
+*Toda la info + episodios*
+
+### Mis Favoritos
+<img src="./screenshots/4-favorites.png" width="250" alt="Favs" />
+
+*Los que guardaste para después*
+
+### Configuración
+<img src="./screenshots/5-profile.png" width="250" alt="Config" />
+
+*Tema oscuro, datos y más*
+
+</div>
+
+---
+
+## Video Demo
+
+<div align="center">
+
+[![Ver Demo](https://img.shields.io/badge/Ver_Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=TU_VIDEO_AQUI)
+
+*1 minuto mostrando todo lo que hace*
+
+</div>
+
+---
+
+## Cómo lo usás
+
+### Si querés probarlo:
 ```bash
-# 1. Clonar el repositorio
-git clone <url-del-repo>
+# 1. Clonar (obvio)
+git clone https://github.com/TU_USUARIO/MultiversoHub.git
 cd MultiversoHub
 
-# 2. Instalar dependencias
+# 2. Instalar todo
 npm install
 
-# 3. Iniciar el proyecto
+# 3. Arrancar
 npx expo start
+
+# 4. Escanear el QR con Expo Go
 ```
 
-**Luego**: Escanea el QR con Expo Go
-
-### ¿Problemas?
+### Si algo explota:
 ```bash
-# Limpia la caché
+# Probá esto primero
 npx expo start --clear
+
+# Si sigue sin andar, F
 ```
 
 ---
 
-## 🛠️ Stack Tecnológico
+## Con qué lo hice
 
-### Core
-- **React Native** + **Expo** (~51.0.0)
-- **TypeScript** (5.1.3)
-- **Expo Router** (3.5.0) - Navegación por archivos
+**Lo básico:**
+- React Native (obvio)
+- Expo (para no volverme loco)
+- TypeScript (porque ya no puedo vivir sin)
 
-### Estado y Datos
-- **Context API + useReducer** - Estado global
-- **AsyncStorage** - Persistencia local
-- **NetInfo** - Detección de conexión
-- **Rick and Morty API** - Fuente de datos
+**Para el estado:**
+- Context API (nada de Redux, gracias)
+- AsyncStorage (para guardar favoritos)
+
+**Para la navegación:**
+- Expo Router (rutas basadas en archivos, re simple)
+
+**Para los datos:**
+- [Rick and Morty API](https://rickandmortyapi.com/) (gratis y sin auth)
+
+**Extras:**
+- React Native Reanimated (animaciones)
+- React Native Chart Kit (gráficos)
+- Expo Sharing (compartir)
+- Y un montón más...
 
 ---
 
-## 📁 Estructura del Proyecto
+## Cómo está organizado
 ```
 MultiversoHub/
-├── app/                          # Navegación (Expo Router)
-│   ├── (tabs)/                   # 4 pestañas principales
-│   │   ├── index.tsx             # Home
-│   │   ├── characters.tsx        # Lista
-│   │   ├── favorites.tsx         # Favoritos
-│   │   └── profile.tsx           # Perfil
-│   ├── character/[id].tsx        # Detalle dinámico
-│   └── _layout.tsx               # Layout principal
+├── app/                    # Las pantallas
+│   ├── (tabs)/            # Las 4 pestañas principales
+│   └── character/[id]     # Detalle dinámico
 │
 ├── src/
-│   ├── components/               # Componentes reutilizables
-│   ├── context/                  # FavoritesContext + ThemeContext
-│   ├── services/                 # Cliente de API
-│   ├── types/                    # TypeScript interfaces
-│   ├── utils/                    # Telemetría
-│   └── hooks/                    # useNetworkStatus
+│   ├── components/        # Componentes reutilizables
+│   ├── context/           # Estado global
+│   ├── services/          # La API
+│   ├── types/             # TypeScript
+│   └── utils/             # Helpers
 │
-└── assets/                       # Recursos estáticos
+└── assets/                # Íconos e imágenes
 ```
 
----
-
-## 🎯 Decisiones Técnicas
-
-### ¿Por qué estas tecnologías?
-
-| Tecnología | Razón |
-|------------|-------|
-| **Expo Router** | Navegación basada en archivos, simple y escalable |
-| **Context API** | Estado global sin Redux, menos código |
-| **AsyncStorage** | Persistencia simple para favoritos |
-| **TypeScript** | Menos bugs, mejor autocompletado |
-| **NetInfo** | Detectar conexión sin complicaciones |
+Nada del otro mundo, todo bastante standard.
 
 ---
 
-## 📡 API Utilizada
+## Lo que aprendí
 
-**Rick and Morty API**: `https://rickandmortyapi.com/api`
+### Técnico:
+- React Native NO es React Web (por las malas)
+- Context API es suficiente para apps medianas
+- TypeScript te salva la vida
+- Las animaciones hacen TODA la diferencia
+- El modo offline es más fácil de lo que pensaba
 
-### Endpoints Principales
-```http
-GET /character?page={page}          # Listar personajes
-GET /character/{id}                 # Detalle
-GET /character?status={status}      # Filtrar (alive/dead/unknown)
-GET /episode/{id}                   # Info de episodio
-```
-
----
-
-## ✅ Requisitos Cumplidos
-
-- ✅ Navegación moderna (Tabs + Stacks)
-- ✅ Consumo de API pública
-- ✅ Estado global (Context + useReducer)
-- ✅ Persistencia local (AsyncStorage)
-- ✅ Modo offline (NetInfo)
-- ✅ Telemetría básica (console.log)
-- ✅ Pantalla Home con estadísticas
-- ✅ Pantalla de detalle con episodios
-- ✅ Sistema de favoritos completo
-- ✅ Configuración de tema
-- ✅ Documentación técnica
+### Soft skills:
+- Googlear es una skill
+- Leer docs > tutoriales de YouTube
+- Los bugs a las 3am son los peores
+- El café es fundamental
 
 ---
 
-## 🎓 Aprendizajes Clave
+## Cosas que podría mejorar
 
-### Técnicos
-- Diferencias entre React Web y React Native
-- Gestión de estado con Context API
-- Persistencia de datos en mobile
-- Consumo de APIs RESTful
-- TypeScript en React Native
+Si tuviera más tiempo (o menos materias):
 
-### Mejores Prácticas
-- Arquitectura modular y escalable
-- Separación de responsabilidades
-- Manejo de errores robusto
-- Feedback visual al usuario
-- Código limpio y tipado
+- [ ] Caché de imágenes (para que cargue más rápido)
+- [ ] Modo oscuro en TODAS las pantallas
+- [ ] Tests de verdad (tengo 2 nomas)
+- [ ] Animaciones más locas
+- [ ] Subir a las tiendas
 
 ---
 
-## 🚀 Mejoras Futuras
+## Decisiones técnicas (por si alguien pregunta)
 
-- [ ] Búsqueda de personajes por nombre
-- [ ] Caché de imágenes offline
-- [ ] Animaciones fluidas
-- [ ] Tema oscuro completo
-- [ ] Tests unitarios
-- [ ] Deploy a tiendas
+**¿Por qué Expo y no React Native puro?**  
+Porque mi salud mental es importante.
 
----
+**¿Por qué Context API y no Redux?**  
+Porque es 2024, no 2018. Y porque es más simple.
 
-## 🙏 Agradecimientos
+**¿Por qué TypeScript?**  
+Probá trabajar sin tipado en un proyecto mediano. Te espero.
 
-- **Rick and Morty API** por los datos
-- **Expo Team** por las herramientas
-- **IES Cipolletti** por la formación
-- **ChatGPT** por la asistencia en desarrollo
+**¿Por qué esta API?**  
+Es gratis, no necesita auth, está bien documentada y tiene datos piolas.
 
 ---
 
-## 👨‍💻 Autor
+## Agradecimientos
+
+- **Rick and Morty API** - Por los datos
+- **Expo Team** - Por hacer React Native usable
+- **Stack Overflow** - Mi verdadero profesor
+- **ChatGPT** - Por bancarme las 2000 preguntas
+- **Mi café** - El verdadero MVP
+- **IES Cipolletti** - Por la formación
+
+---
+
+## Sobre mí
 
 **Rayen Millahual**  
 Estudiante de Desarrollo Full Stack  
-Instituto de Educación Superior Cipolletti
+IES Cipolletti - 2024
+
+Si encontraste un bug o tenés sugerencias, abrí un issue. Si te gustó, dejá una estrella.
+
+---
+
+## Licencia
+
+MIT o algo así. Básicamente, hacé lo que quieras con esto.
 
 ---
 
 <div align="center">
 
-**Wubba Lubba Dub Dub!** 🚀
 
-*Hecho con ❤️ y mucho café*
+**Hecho con:**  
+Pasión  
+Café  
+Noches sin dormir  
+VSCode  
+Lo-fi beats
 
-**Instituto de Educación Superior Cipolletti**  
-Desarrollo Full Stack | Desarrollo Móvil | 2024
-Además de cumplir con todos los requisitos del trabajo práctico, implementé 10 features avanzadas adicionales: búsqueda en tiempo real, filtros combinables, gráficos interactivos, sistema de compartir, animaciones suaves con React Native Reanimated, loading skeletons animados, caché offline inteligente, tests unitarios, y un sistema completo de telemetría.
+**Para:**  
+IES Cipolletti  
+Desarrollo Móvil  
+Aprobar (ojalá con 10)
+
 </div>
